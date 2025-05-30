@@ -15,7 +15,7 @@ public class FollowerSystem : MonoBehaviour
         {
             previousPositions.Enqueue(transform.position);
 
-            if (previousPositions.Count > followers.Count * 10)  //ระยะห่างระหว่าง Follower
+            if (previousPositions.Count > followers.Count * 10) 
             {
                 previousPositions.Dequeue();
             }

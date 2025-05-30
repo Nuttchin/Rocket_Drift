@@ -24,7 +24,7 @@ public class StarManager : MonoBehaviour
     {
         if (player == null)
         {
-            Debug.LogError("StarManager: ต้องใส่ Transform ของ Player ด้วยครับ!");
+            Debug.LogError("StarManager: need Player ");
             return;
         }
 

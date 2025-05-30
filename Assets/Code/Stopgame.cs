@@ -6,7 +6,7 @@ public class Stopgame : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Meteor") || collision.CompareTag("Enemy"))
+        if (collision.CompareTag("Meteor") || collision.CompareTag("Enemy") || collision.CompareTag("Boss"))
         {
             Debug.Log("Game Over!"); 
             Time.timeScale = 0; 

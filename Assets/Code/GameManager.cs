@@ -10,8 +10,11 @@ public class GameManager : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     public static GameManager instance;
 
     public GameObject player;
+
     public GameObject continueButton;
-    public GameObject quitButton; 
+    public GameObject quitButton;
+    public GameObject resetButton;
+
     public CanvasGroup continuePanel;
     public float fadeDuration = 1f;
     public float clearRadius = 5f;
@@ -29,8 +32,11 @@ public class GameManager : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     public void OnPlayerDied()
     {
         StartCoroutine(FadeInPanel());
+
         continueButton.SetActive(true);
-        quitButton.SetActive(true); 
+        quitButton.SetActive(true);
+        resetButton.SetActive(true);
+
         Time.timeScale = 0f;
     }
 
@@ -38,31 +44,18 @@ public class GameManager : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     {
         continuePanel.gameObject.SetActive(true);
 
-       
-        continueButton.SetActive(true);
-        quitButton.SetActive(true);
-
         CanvasGroup continueGroup = continuePanel;
-        CanvasGroup continueBtnGroup = continueButton.GetComponent<CanvasGroup>();
-        CanvasGroup quitBtnGroup = quitButton.GetComponent<CanvasGroup>();
+        CanvasGroup continueBtnGroup = GetOrAddCanvasGroup(continueButton);
+        CanvasGroup quitBtnGroup = GetOrAddCanvasGroup(quitButton);
+        CanvasGroup resetBtnGroup = GetOrAddCanvasGroup(resetButton);
 
-        
-        if (continueBtnGroup == null)
-        {
-            continueBtnGroup = continueButton.AddComponent<CanvasGroup>();
-        }
-        if (quitBtnGroup == null)
-        {
-            quitBtnGroup = quitButton.AddComponent<CanvasGroup>();
-        }
-
-        
         continueGroup.interactable = false;
         continueGroup.blocksRaycasts = false;
 
         continueGroup.alpha = 0f;
         continueBtnGroup.alpha = 0f;
         quitBtnGroup.alpha = 0f;
+        resetBtnGroup.alpha = 0f;
 
         float elapsed = 0f;
 
@@ -74,12 +67,23 @@ public class GameManager : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
             continueGroup.alpha = t;
             continueBtnGroup.alpha = t;
             quitBtnGroup.alpha = t;
+            resetBtnGroup.alpha = t;
 
             yield return null;
         }
 
         continueGroup.interactable = true;
         continueGroup.blocksRaycasts = true;
+    }
+
+    CanvasGroup GetOrAddCanvasGroup(GameObject obj)
+    {
+        CanvasGroup group = obj.GetComponent<CanvasGroup>();
+        if (group == null)
+        {
+            group = obj.AddComponent<CanvasGroup>();
+        }
+        return group;
     }
 
     public void ShowRewardedAd()
@@ -90,11 +94,12 @@ public class GameManager : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     public void ContinueGame()
     {
         continueButton.SetActive(false);
-        if (quitButton != null) quitButton.SetActive(false); 
+        quitButton.SetActive(false);
+        resetButton.SetActive(false);
+
         continuePanel.gameObject.SetActive(false);
         Time.timeScale = 1f;
 
-        // เคลียร์ศัตรู/อุกกาบาตรอบตัว
         Collider2D[] colliders = Physics2D.OverlapCircleAll(player.transform.position, clearRadius);
         foreach (Collider2D col in colliders)
         {
@@ -113,13 +118,18 @@ public class GameManager : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
-    public void QuitToMainMenu() 
+    public void QuitToMainMenu()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene("main_menu");
     }
 
-    
+    public void ResetScene()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     public void OnUnityAdsShowComplete(string adUnitId, UnityAdsShowCompletionState showCompletionState)
     {
         if (adUnitId == this.adUnitId && showCompletionState == UnityAdsShowCompletionState.COMPLETED)
@@ -136,7 +146,6 @@ public class GameManager : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     public void OnUnityAdsShowStart(string adUnitId) { }
     public void OnUnityAdsShowClick(string adUnitId) { }
 
-   
     public void OnUnityAdsAdLoaded(string adUnitId)
     {
         Debug.Log("Ad loaded: " + adUnitId);

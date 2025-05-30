@@ -19,8 +19,11 @@ public class Boss : MonoBehaviour
     private float dashTimer;
 
     public ParticleSystem deathEffect;
-    public ParticleSystem damageEffect;   
-    public ParticleSystem teleportEffect; 
+    public ParticleSystem damageEffect;
+    public ParticleSystem teleportEffect;
+
+    public AudioClip damageSound;
+    public AudioClip deathSound;
 
     public Vector2 teleportAreaMin = new Vector2(-8, -4);
     public Vector2 teleportAreaMax = new Vector2(8, 4);
@@ -29,12 +32,14 @@ public class Boss : MonoBehaviour
     private Transform player;
     private SpriteRenderer sr;
     private bool hasTeleportedWhenLowHP = false;
+    private AudioSource audioSource;
 
     void Start()
     {
         currentHP = maxHP;
         player = GameObject.FindGameObjectWithTag("Player").transform;
         sr = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     void Update()
@@ -74,9 +79,13 @@ public class Boss : MonoBehaviour
             Instantiate(damageEffect, transform.position, Quaternion.identity);
         }
 
+        if (damageSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(damageSound);
+        }
+
         StartCoroutine(FlashRed());
 
-        
         if (currentHP <= 0)
         {
             if (deathEffect != null)
@@ -84,12 +93,16 @@ public class Boss : MonoBehaviour
                 Instantiate(deathEffect, transform.position, Quaternion.identity);
             }
 
+            if (deathSound != null && audioSource != null)
+            {
+                audioSource.PlayOneShot(deathSound);
+            }
+
             DropFollowers();
             Destroy(gameObject);
         }
         else
         {
-            // HP < 50% 
             if (allowTeleport && !hasTeleportedWhenLowHP && currentHP < maxHP * 0.5f)
             {
                 TeleportToRandomPosition();

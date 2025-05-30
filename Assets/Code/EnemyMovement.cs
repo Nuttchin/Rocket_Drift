@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    public float baseSpeed = 2f;  // ความเร็วปกติ
-    public float maxSpeed = 6f;   // ความเร็วสูงสุด
-    public float detectionRadius = 5f; // ระยะที่ศัตรูเริ่มไล่ล่า
-    public float chaseAccelerationFactor = 2f; // ปัจจัยเร่งความเร็ว
-    public float wanderSpeed = 1.5f; // ความเร็วตอนเดินสุ่ม
-    public float changeDirectionTime = 2f; // เปลี่ยนทิศทางทุกกี่วินาที
+    public float baseSpeed = 2f;  
+    public float maxSpeed = 6f;   
+    public float detectionRadius = 5f; 
+    public float chaseAccelerationFactor = 2f; 
+    public float wanderSpeed = 1.5f; 
+    public float changeDirectionTime = 2f; 
 
-    private float currentSpeed; // ความเร็วปัจจุบัน
+    private float currentSpeed; 
     private Transform player;
     private Rigidbody2D rb;
     private Vector2 wanderDirection;
@@ -50,7 +50,6 @@ public class EnemyMovement : MonoBehaviour
 
     void AdjustSpeed(float distanceToPlayer)
     {
-        // คำนวณให้ความเร็วเพิ่มขึ้นตามระยะ (ยิ่งใกล้ ยิ่งเร็ว)
         float distanceFactor = Mathf.Clamp01(1 - (distanceToPlayer / detectionRadius));
         currentSpeed = Mathf.Lerp(baseSpeed, maxSpeed, distanceFactor);
     }

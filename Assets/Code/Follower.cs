@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class Follower : MonoBehaviour
@@ -10,6 +9,10 @@ public class Follower : MonoBehaviour
     public float smoothFollowSpeed = 5f;
     public float delayPosition = 0.2f;
     public ParticleSystem hitEffect;
+
+    [Header("Sound Effects")]
+    public AudioClip collectSound;
+    private AudioSource audioSource;
 
     private bool isFollowing = false;
     private Transform target;
@@ -24,6 +27,13 @@ public class Follower : MonoBehaviour
     void Start()
     {
         PickNewWanderDirection();
+
+        // Audio source setup
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
     }
 
     void Update()
@@ -46,11 +56,9 @@ public class Follower : MonoBehaviour
             PickNewWanderDirection();
         }
 
-       
         Vector3 wanderTarget = transform.position + (Vector3)wanderDirection;
         transform.position = Vector3.SmoothDamp(transform.position, wanderTarget, ref currentVelocity, 1f / smoothFollowSpeed, wanderSpeed);
 
-      
         if (currentVelocity.magnitude > 0.1f)
         {
             float angle = Mathf.Atan2(currentVelocity.y, currentVelocity.x) * Mathf.Rad2Deg - 90f;
@@ -97,6 +105,9 @@ public class Follower : MonoBehaviour
 
             if (hitEffect != null)
                 Instantiate(hitEffect, transform.position, Quaternion.identity);
+
+            if (collectSound != null && audioSource != null)
+                audioSource.PlayOneShot(collectSound);
         }
     }
 
@@ -111,7 +122,9 @@ public class Follower : MonoBehaviour
 
             if (hitEffect != null)
                 Instantiate(hitEffect, transform.position, Quaternion.identity);
+
+            if (collectSound != null && audioSource != null)
+                audioSource.PlayOneShot(collectSound);
         }
     }
 }
-
